@@ -20,12 +20,13 @@ const server = app.listen(port, () =>
     });
 
 
-app.get('/add', (req, res) => {
-    res.send(projectData)
+app.get('/get', (req, res) => {
+    res.send(projectData);
+    projectData.splice(0, projectData.length);
 });
 
-app.post('/add', (req, res) => {
+app.post('/save', (req, res) => {
     projectData.push(req.body);
-    console.log(projectData);
+    // console.log(projectData);
 });
 
