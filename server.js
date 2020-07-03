@@ -22,10 +22,11 @@ const server = app.listen(port, () =>
 
 app.get('/get', (req, res) => {
     res.send(projectData);
-    projectData.splice(0, projectData.length);
+    projectData.splice(0, projectData.length);//earse data after sending the response
 });
 
 app.post('/save', (req, res) => {
+    projectData.splice(0, projectData.length);//earse any old data
     projectData.push(req.body);
     // console.log(projectData);
 });
