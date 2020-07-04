@@ -13,7 +13,7 @@ let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
 
 // OpenWeatherApi configuration
 let baseURL = 'https://api.openweathermap.org/data/2.5/weather';
-let apiKey  = '5bc623eb5665f9a00227965645c24875';
+let apiKey  = '5bc623eb5665f9a00227965645c24875&units=imperial';
 
 let countryCode = 'us';
 
@@ -30,7 +30,6 @@ const fetchData = async (zipCode) => {
         } = response;
         let newData;
         const result = {name: city, date: newDate, temperature: temp, feelings: feeling.value};
-        postData('/save', result);
         return result;
     }catch(error) {
         console.log('error', error);
@@ -48,27 +47,32 @@ const postData = async (path, data) => {
     });
     try {
         const newData = await response.json();
-        return newData;
     }catch(error) {
         console.log('error', error);
     }
 }
 
-const updateUI = async(data) => {
-    const { name: city, date: newdate, temperature: temperature, feelings:text } = data;
-    entry.innerHTML   = `ciry: ${ city }`;
-    date.innerHTML    = `Date: ${ newDate }`;
-    temp.innerHTML    = `temperature: ${ (temperature - 273.15).toPrecision(4) } deg`;
-    content.innerHTML = `feeling: ${ text }`;
-    document.querySelector('.entry').style.display = 'grid';
+const updateUI = async() => {
+    const request = await fetch('/get');
+    try{
+        const data = await request.json();
+        const { name: city, date: newdate, temperature: temperature, feelings:text } = data;
+        entry.innerHTML   = `ciry: ${ city }`;
+        date.innerHTML    = `Date: ${ newDate }`;
+        temp.innerHTML    = `temperature: ${ temperature } deg`;
+        content.innerHTML = `feeling: ${ text }`;
+        document.querySelector('.entry').style.display = 'grid';
+    }catch(error){
+        console.log("error", error);
+    }
 }
 
 function getWeather(){
     fetchData(zip.value)
-        .then(data => { 
-            updateUI(data)
-            // console.log(data) 
-        });
+        .then( data => {
+            postData('/save', data)
+                .then( updateUI() )
+        })
 }
 
 document.getElementById('generate').addEventListener('click', getWeather);
